@@ -7,19 +7,19 @@ GitHub Streak à la sénégalaise avec un design moderne
 ### Basic
 
 ```md
-![Galsen Streak](http://localhost:3000/streak/USERNAME)
+![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME)
 ```
 
 ### Avec thème
 
 ```md
-![Galsen Streak](http://localhost:3000/streak/USERNAME?theme=ocean)
+![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?theme=ocean)
 ```
 
 ### Sans graphique
 
 ```md
-![Galsen Streak](http://localhost:3000/streak/USERNAME?hide_graph=true)
+![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?hide_graph=true)
 ```
 
 ## 🎨 Thèmes disponibles
