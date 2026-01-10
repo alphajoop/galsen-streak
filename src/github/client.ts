@@ -3,7 +3,7 @@ import type { CommitDay, GitHubGraphQLResponse, UserInfo } from "../streak/types
 export async function getStreakData(username: string): Promise<CommitDay[]> {
   const TOKEN = process.env.GITHUB_TOKEN;
 
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN non défini dans .env");
+  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
 
   const query = `
     query($login: String!) {
@@ -54,9 +54,9 @@ export async function getStreakData(username: string): Promise<CommitDay[]> {
 export async function getUserInfo(username: string): Promise<UserInfo> {
   const TOKEN = process.env.GITHUB_TOKEN;
 
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN non défini dans .env");
+  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
 
-  // GraphQL query pour infos utilisateur
+  // GraphQL query for user info
   const query = `
     query($login: String!) {
       user(login: $login) {
@@ -99,14 +99,14 @@ export async function getUserInfo(username: string): Promise<UserInfo> {
 export async function getTotalContributions(username: string): Promise<number> {
   const TOKEN = process.env.GITHUB_TOKEN;
 
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN non défini dans .env");
+  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
 
   const userInfo = await getUserInfo(username);
   const years = userInfo.contributionYears;
 
   if (years.length === 0) return 0;
 
-  // Récupérer les contributions pour chaque année
+  // Get contributions for each year
   let totalContributions = 0;
 
   for (const year of years) {

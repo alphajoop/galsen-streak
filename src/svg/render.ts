@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { StreakResult } from "../streak/types";
 import { THEMES, type Theme } from "./themes";
 
@@ -8,12 +9,7 @@ function getTheme(themeName: string): Theme {
 }
 
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return format(new Date(dateString), "MMMM d, yyyy");
 }
 
 export function renderSVG(
@@ -149,7 +145,7 @@ export function renderSVG(
         ${totalLifetime.toLocaleString()} contributions
       </text>
       <text x="0" y="42" class="contributions-since" text-anchor="end">
-        depuis ${formattedDate}
+        since ${formattedDate}
       </text>
     </g>
   </g>
@@ -162,9 +158,9 @@ export function renderSVG(
             fill="${theme.border}" opacity="0.08"/>
       <rect x="0" y="0" width="210" height="70" rx="10" 
             fill="none" stroke="${theme.border}" stroke-width="1" opacity="0.2"/>
-      <text x="15" y="22" class="stat-label">🔥 Streak Actuel</text>
+      <text x="15" y="22" class="stat-label">🔥 Current Streak</text>
       <text x="15" y="55" class="stat-value">${current}</text>
-      <text x="${current > 99 ? 85 : current > 9 ? 70 : 60}" y="55" class="stat-unit">jours</text>
+      <text x="${current > 99 ? 85 : current > 9 ? 70 : 60}" y="55" class="stat-unit">days</text>
     </g>
 
     <!-- Longest Streak Card -->
@@ -173,9 +169,9 @@ export function renderSVG(
             fill="${theme.accent}" opacity="0.08"/>
       <rect x="225" y="0" width="210" height="70" rx="10" 
             fill="none" stroke="${theme.accent}" stroke-width="1" opacity="0.2"/>
-      <text x="240" y="22" class="stat-label">🏆 Record</text>
+      <text x="240" y="22" class="stat-label">🏆 Longest</text>
       <text x="240" y="55" class="stat-value">${longest}</text>
-      <text x="${longest > 99 ? 310 : longest > 9 ? 295 : 285}" y="55" class="stat-unit">jours</text>
+      <text x="${longest > 99 ? 310 : longest > 9 ? 295 : 285}" y="55" class="stat-unit">days</text>
     </g>
   </g>
 
@@ -193,7 +189,7 @@ function renderGraph(graph: number[], theme: Theme): string {
   return `
   <line x1="20" y1="148" x2="475" y2="148" 
         stroke="${theme.border}" stroke-width="1" opacity="0.15"/>
-  <text x="20" y="164" class="stat-label">Activité - 30 derniers jours</text>
+  <text x="20" y="164" class="stat-label">Activity - Last 30 days</text>
   
   <g transform="translate(${startX}, ${startY + 25})">
     ${graph

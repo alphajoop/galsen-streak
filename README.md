@@ -44,7 +44,7 @@ GitHub Streak à la sénégalaise avec un design moderne
 
 ```bash
 # Cloner
-git clone https://github.com/username/galsen-streak.git
+git clone https://github.com/alphajoop/galsen-streak.git
 cd galsen-streak
 
 # Installer

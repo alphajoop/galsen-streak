@@ -1,3 +1,4 @@
+import { differenceInDays, startOfDay } from "date-fns";
 import type { CommitDay, StreakResult } from "./types";
 
 export function calculateStreak(
@@ -21,34 +22,31 @@ export function calculateStreak(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  // Total contributions (année actuelle)
+  // Total contributions (current year)
   const total = sortedDays.reduce((sum, day) => sum + day.count, 0);
 
-  // Dernière contribution
+  // Last contribution
   const lastContribution = [...sortedDays].reverse().find((day) => day.count > 0)?.date || null;
 
-  // Calcul du streak actuel (depuis la fin)
+  // Current streak calculation (from the end)
   let current = 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = startOfDay(new Date());
 
   for (let i = sortedDays.length - 1; i >= 0; i--) {
     const day = sortedDays[i];
     if (!day) break;
 
-    const dayDate = new Date(day.date);
-    dayDate.setHours(0, 0, 0, 0);
+    const dayDate = startOfDay(new Date(day.date));
 
-    const diffDays = Math.floor((today.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = differenceInDays(today, dayDate);
 
     if (diffDays <= 1 && day.count > 0) {
       current++;
     } else if (day.count > 0) {
       const prevDay = sortedDays[i + 1];
       if (prevDay) {
-        const prevDate = new Date(prevDay.date);
-        prevDate.setHours(0, 0, 0, 0);
-        const diff = Math.floor((dayDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+        const prevDate = startOfDay(new Date(prevDay.date));
+        const diff = differenceInDays(dayDate, prevDate);
         if (diff === 1) {
           current++;
         } else {
@@ -60,7 +58,7 @@ export function calculateStreak(
     }
   }
 
-  // Calcul du plus long streak
+  // Longest streak calculation
   let longest = 0;
   let tempStreak = 0;
 
@@ -78,7 +76,7 @@ export function calculateStreak(
 
         const currDate = new Date(day.date);
         const prevDate = new Date(prevDay.date);
-        const diff = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+        const diff = differenceInDays(currDate, prevDate);
         if (diff === 1) {
           tempStreak = 0;
         }
@@ -86,7 +84,7 @@ export function calculateStreak(
     }
   }
 
-  // Graphique des 30 derniers jours
+  // Graph of the last 30 days
   const graph = sortedDays.slice(-30).map((day) => day.count);
 
   return {
