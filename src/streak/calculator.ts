@@ -1,11 +1,17 @@
 import type { CommitDay, StreakResult } from "./types";
 
-export function calculateStreak(days: CommitDay[]): StreakResult {
+export function calculateStreak(
+  days: CommitDay[],
+  totalLifetime: number,
+  accountCreatedAt: string,
+): StreakResult {
   if (days.length === 0) {
     return {
       current: 0,
       longest: 0,
       total: 0,
+      totalLifetime,
+      accountCreatedAt,
       lastContribution: null,
       graph: [],
     };
@@ -15,11 +21,11 @@ export function calculateStreak(days: CommitDay[]): StreakResult {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  // Total contributions
+  // Total contributions (année actuelle)
   const total = sortedDays.reduce((sum, day) => sum + day.count, 0);
 
   // Dernière contribution
-  const lastContribution = sortedDays.reverse().find((day) => day.count > 0)?.date || null;
+  const lastContribution = [...sortedDays].reverse().find((day) => day.count > 0)?.date || null;
 
   // Calcul du streak actuel (depuis la fin)
   let current = 0;
@@ -35,11 +41,9 @@ export function calculateStreak(days: CommitDay[]): StreakResult {
 
     const diffDays = Math.floor((today.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24));
 
-    // Si on est aujourd'hui ou hier et qu'il y a des commits
     if (diffDays <= 1 && day.count > 0) {
       current++;
     } else if (day.count > 0) {
-      // Continue le streak si c'est le jour précédent
       const prevDay = sortedDays[i + 1];
       if (prevDay) {
         const prevDate = new Date(prevDay.date);
@@ -68,7 +72,6 @@ export function calculateStreak(days: CommitDay[]): StreakResult {
       tempStreak++;
       longest = Math.max(longest, tempStreak);
     } else {
-      // Vérifie si c'est vraiment une rupture (pas un jour sans data)
       if (i > 0) {
         const prevDay = sortedDays[i - 1];
         if (!prevDay) break;
@@ -90,6 +93,8 @@ export function calculateStreak(days: CommitDay[]): StreakResult {
     current,
     longest,
     total,
+    totalLifetime,
+    accountCreatedAt,
     lastContribution,
     graph,
   };

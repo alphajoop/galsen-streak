@@ -7,17 +7,26 @@ function getTheme(themeName: string): Theme {
   return theme ?? (themes.senegal as Theme);
 }
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export function renderSVG(
   streak: StreakResult,
   themeName: string = "senegal",
   showGraph: boolean = true,
 ): string {
   const theme = getTheme(themeName);
-  const { current, longest, total, graph } = streak;
+  const { current, longest, totalLifetime, accountCreatedAt, graph } = streak;
 
-  // Normalisation des valeurs du graphique
   const maxValue = Math.max(...graph, 1);
   const normalizedGraph = graph.map((val) => (val / maxValue) * 40);
+  const formattedDate = formatDate(accountCreatedAt);
 
   return `
 <svg width="495" height="${showGraph ? "220" : "155"}" xmlns="http://www.w3.org/2000/svg">
@@ -27,24 +36,11 @@ export function renderSVG(
       <stop offset="100%" style="stop-color:${theme.bgGradient || theme.bg};stop-opacity:1" />
     </linearGradient>
     
-    <linearGradient id="fireGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:${theme.fire};stop-opacity:1" />
-      <stop offset="100%" style="stop-color:${theme.accent};stop-opacity:0.8" />
-    </linearGradient>
-
     <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" style="stop-color:${theme.border};stop-opacity:0.5" />
       <stop offset="50%" style="stop-color:${theme.border};stop-opacity:1" />
       <stop offset="100%" style="stop-color:${theme.border};stop-opacity:0.5" />
     </linearGradient>
-
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
 
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
@@ -78,52 +74,35 @@ export function renderSVG(
       }
       
       .contributions-text {
-        font: 500 11px 'Inter', 'Segoe UI', system-ui, sans-serif;
-        fill: ${theme.subtext};
+        font: 600 12px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        fill: ${theme.text};
         letter-spacing: 0.3px;
       }
 
-      /* Animations */
+      .contributions-since {
+        font: 400 9px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        fill: ${theme.subtext};
+        letter-spacing: 0.2px;
+      }
+
       @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.85;
-          transform: scale(1.05);
-        }
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.85; transform: scale(1.05); }
       }
 
       @keyframes slideInLeft {
-        from {
-          opacity: 0;
-          transform: translateX(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
       }
 
       @keyframes borderShine {
-        0% {
-          stroke-dashoffset: 1000;
-        }
-        100% {
-          stroke-dashoffset: 0;
-        }
+        0% { stroke-dashoffset: 1000; }
+        100% { stroke-dashoffset: 0; }
       }
 
       .fire-emoji {
@@ -136,18 +115,10 @@ export function renderSVG(
         opacity: 0;
       }
 
-      .stat-card:nth-child(1) {
-        animation-delay: 0.1s;
-      }
-
-      .stat-card:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-
-      .header-group {
-        animation: slideInLeft 0.5s ease-out;
-      }
-
+      .stat-card:nth-child(1) { animation-delay: 0.1s; }
+      .stat-card:nth-child(2) { animation-delay: 0.2s; }
+      .header-group { animation: slideInLeft 0.5s ease-out; }
+      
       .border-animated {
         stroke-dasharray: 1000;
         stroke-dashoffset: 1000;
@@ -162,11 +133,8 @@ export function renderSVG(
     </style>
   </defs>
 
-  <!-- Background -->
   <rect width="100%" height="100%" rx="12" fill="url(#bgGradient)" />
-  
-  <!-- Animated Border -->
-  <rect x="1" y="1" width="493" height="${showGraph ? "193" : "153"}" 
+  <rect x="1" y="1" width="493" height="${showGraph ? "218" : "153"}" 
         rx="11" fill="none" stroke="url(#borderGradient)" 
         stroke-width="1.5" class="border-animated" opacity="0.4"/>
 
@@ -174,9 +142,16 @@ export function renderSVG(
   <g class="header-group">
     <text x="20" y="35" class="fire-emoji">🔥</text>
     <text x="50" y="38" class="title">Galsen Streak</text>
-    <text x="465" y="35" class="contributions-text" text-anchor="end">
-      ${total.toLocaleString()} contributions
-    </text>
+    
+    <!-- Total Lifetime Contributions -->
+    <g transform="translate(465, 0)">
+      <text x="0" y="30" class="contributions-text" text-anchor="end">
+        ${totalLifetime.toLocaleString()} contributions
+      </text>
+      <text x="0" y="42" class="contributions-since" text-anchor="end">
+        depuis ${formattedDate}
+      </text>
+    </g>
   </g>
 
   <!-- Stats Grid -->
@@ -216,7 +191,6 @@ function renderGraph(graph: number[], theme: Theme): string {
   const startY = 180;
 
   return `
-  <!-- Graph Section -->
   <line x1="20" y1="148" x2="475" y2="148" 
         stroke="${theme.border}" stroke-width="1" opacity="0.15"/>
   <text x="20" y="164" class="stat-label">Activité - 30 derniers jours</text>
@@ -225,9 +199,8 @@ function renderGraph(graph: number[], theme: Theme): string {
     ${graph
       .map((height, i) => {
         const x = i * (barWidth + gap);
-        const actualHeight = Math.max(height, 2); // Minimum 2px pour visibilité
+        const actualHeight = Math.max(height, 2);
 
-        // Dégradé de couleurs basé sur l'intensité
         let color: string;
         if (height > 30) {
           color = theme.graph[2] || theme.accent;
