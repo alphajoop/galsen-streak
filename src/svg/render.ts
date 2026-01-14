@@ -202,6 +202,8 @@ function renderGraph(graph: number[], theme: Theme): string {
   const startX = 20;
   const startY = 180;
 
+  const max = Math.max(...graph);
+
   return `
   <line x1="20" y1="148" x2="475" y2="148" 
         stroke="${theme.border}" stroke-width="1" opacity="0.15"/>
@@ -214,11 +216,11 @@ function renderGraph(graph: number[], theme: Theme): string {
         const actualHeight = Math.max(height, 2);
 
         let color: string;
-        if (height > 30) {
+        if (height > max * 0.7) {
           color = theme.graph[2] || theme.accent;
-        } else if (height > 15) {
+        } else if (height > max * 0.3) {
           color = theme.graph[1] || theme.border;
-        } else if (height > 5) {
+        } else if (height > 0) {
           color = theme.graph[0] || theme.subtext;
         } else {
           color = theme.subtext;

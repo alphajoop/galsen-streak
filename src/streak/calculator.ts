@@ -94,8 +94,21 @@ export function calculateStreak(
     }
   }
 
-  // Graph of the last 30 days
-  const graph = sortedDays.slice(-30).map((day) => day.count);
+  // Graph of the last 30 days (sliding window from today)
+  const today = startOfDay(new Date(new Date().toISOString()));
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29); // -29 to include today = 30 days total
+
+  const graph = Array(30)
+    .fill(0)
+    .map((_, index) => {
+      const currentDate = new Date(thirtyDaysAgo);
+      currentDate.setDate(currentDate.getDate() + index);
+      const dateString = currentDate.toISOString().split("T")[0];
+
+      const dayData = sortedDays.find((day) => day.date === dateString);
+      return dayData ? dayData.count : 0;
+    });
 
   return {
     current,
