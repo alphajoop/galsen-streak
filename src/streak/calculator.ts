@@ -15,6 +15,7 @@ export function calculateStreak(
       accountCreatedAt,
       lastContribution: null,
       graph: [],
+      streakStatus: "broken",
     };
   }
 
@@ -28,59 +29,68 @@ export function calculateStreak(
   // Last contribution
   const lastContribution = [...sortedDays].reverse().find((day) => day.count > 0)?.date || null;
 
-  // Current streak calculation (from the end)
+  // Current streak (robuste, GitHub-like)
   let current = 0;
-  const today = startOfDay(new Date());
+  let streakStatus: "active" | "grace-day" | "broken" = "broken";
 
-  for (let i = sortedDays.length - 1; i >= 0; i--) {
-    const day = sortedDays[i];
-    if (!day) break;
+  const activeDays = sortedDays.filter((d) => d.count > 0);
+  if (activeDays.length === 0) {
+    current = 0;
+    streakStatus = "broken";
+  } else {
+    const lastActiveDay = activeDays[activeDays.length - 1];
+    if (!lastActiveDay) {
+      current = 0;
+      streakStatus = "broken";
+    } else {
+      let lastDate = startOfDay(new Date(lastActiveDay.date));
+      const today = startOfDay(new Date(new Date().toISOString()));
 
-    const dayDate = startOfDay(new Date(day.date));
+      const diffFromToday = differenceInDays(today, lastDate);
 
-    const diffDays = differenceInDays(today, dayDate);
+      // Si la dernière contribution est trop vieille → streak = 0
+      if (diffFromToday > 1) {
+        current = 0;
+        streakStatus = "broken";
+      } else {
+        current = 1;
+        streakStatus = diffFromToday === 0 ? "active" : "grace-day";
 
-    if (diffDays <= 1 && day.count > 0) {
-      current++;
-    } else if (day.count > 0) {
-      const prevDay = sortedDays[i + 1];
-      if (prevDay) {
-        const prevDate = startOfDay(new Date(prevDay.date));
-        const diff = differenceInDays(dayDate, prevDate);
-        if (diff === 1) {
-          current++;
-        } else {
-          break;
+        for (let i = activeDays.length - 2; i >= 0; i--) {
+          const currentDay = activeDays[i];
+          if (!currentDay) break;
+
+          const curr = startOfDay(new Date(currentDay.date));
+          const diff = differenceInDays(lastDate, curr);
+
+          if (diff === 1) {
+            current++;
+            lastDate = curr;
+          } else {
+            break;
+          }
         }
       }
-    } else if (diffDays > 1) {
-      break;
     }
   }
 
   // Longest streak calculation
   let longest = 0;
-  let tempStreak = 0;
+  let temp = 0;
+  let prevDate: Date | null = null;
 
-  for (let i = 0; i < sortedDays.length; i++) {
-    const day = sortedDays[i];
-    if (!day) break;
-
+  for (const day of sortedDays) {
     if (day.count > 0) {
-      tempStreak++;
-      longest = Math.max(longest, tempStreak);
-    } else {
-      if (i > 0) {
-        const prevDay = sortedDays[i - 1];
-        if (!prevDay) break;
+      const currDate = startOfDay(new Date(day.date));
 
-        const currDate = new Date(day.date);
-        const prevDate = new Date(prevDay.date);
-        const diff = differenceInDays(currDate, prevDate);
-        if (diff === 1) {
-          tempStreak = 0;
-        }
+      if (prevDate && differenceInDays(currDate, prevDate) === 1) {
+        temp++;
+      } else {
+        temp = 1;
       }
+
+      longest = Math.max(longest, temp);
+      prevDate = currDate;
     }
   }
 
@@ -95,5 +105,6 @@ export function calculateStreak(
     accountCreatedAt,
     lastContribution,
     graph,
+    streakStatus,
   };
 }

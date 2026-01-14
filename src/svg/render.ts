@@ -18,11 +18,24 @@ export function renderSVG(
   showGraph: boolean = true,
 ): string {
   const theme = getTheme(themeName);
-  const { current, longest, totalLifetime, accountCreatedAt, graph } = streak;
+  const { current, longest, totalLifetime, accountCreatedAt, graph, streakStatus } = streak;
 
   const maxValue = Math.max(...graph, 1);
   const normalizedGraph = graph.map((val) => (val / maxValue) * 40);
   const formattedDate = formatDate(accountCreatedAt);
+
+  const getStatusColor = () => {
+    switch (streakStatus) {
+      case "active":
+        return "#22c55e";
+      case "grace-day":
+        return "#f59e0b";
+      case "broken":
+        return "#ef4444";
+      default:
+        return "#ef4444";
+    }
+  };
 
   return `
 <svg width="495" height="${showGraph ? "220" : "155"}" xmlns="http://www.w3.org/2000/svg">
@@ -161,6 +174,9 @@ export function renderSVG(
       <text x="15" y="22" class="stat-label">🔥 Current Streak</text>
       <text x="15" y="55" class="stat-value">${current}</text>
       <text x="${current > 99 ? 85 : current > 9 ? 70 : 60}" y="55" class="stat-unit">days</text>
+      
+      <!-- Status indicator -->
+      <circle cx="200" cy="50" r="3" fill="${getStatusColor()}" opacity="0.8"/>
     </g>
 
     <!-- Longest Streak Card -->

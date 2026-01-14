@@ -11,6 +11,7 @@ export type StreakResult = {
   accountCreatedAt: string;
   lastContribution: string | null;
   graph: number[];
+  streakStatus: "active" | "grace-day" | "broken";
 };
 
 export type UserInfo = {
