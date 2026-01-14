@@ -8,9 +8,11 @@
     "dev": "bun run --watch ./src/index.ts",
     "build": "bun run clean && tsc && bun build src/index.ts --outdir dist --minify --target bun",
     "clean": "bunx rimraf dist",
-    "format": "bunx --bun biome format --write",
-    "lint": "bunx --bun biome lint",
-    "check": "bunx --bun biome check"
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci ."
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
