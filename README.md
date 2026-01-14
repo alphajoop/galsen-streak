@@ -10,6 +10,10 @@ GitHub Streak à la sénégalaise avec un design moderne
 ![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME)
 ```
 
+**Exemple réel :**
+
+![Galsen Streak](https://galsen-streak.vercel.app/streak/torvalds)
+
 ### Avec thème
 
 ```md
