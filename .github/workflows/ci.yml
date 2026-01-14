@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize]
+jobs:
+  quality:
+    name: Quality, Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      # 2️⃣ Setup Bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: bun install
+
+      # 4️⃣ Setup Biome
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      # 5️⃣ Run Biome CI
+      - name: Run Biome checks
+        run: bun run check:ci
+
+      # 6️⃣ Clean dist
+      - name: Clean dist folder
+        run: bun run clean
+
+      # 7️⃣ Build TypeScript & bundle
+      - name: Build library
+        run: bun run build
+
+      # 8️⃣ Run tests
+      - name: Run tests
+        run: bun test
