@@ -12,7 +12,7 @@ GitHub Streak à la sénégalaise avec un design moderne
 
 **Exemple réel :**
 
-![Galsen Streak](https://galsen-streak.vercel.app/streak/torvalds)
+[![Galsen Streak](https://galsen-streak.vercel.app/streak/torvalds)](https://galsen-streak.vercel.app/streak/torvalds)
 
 ### Avec thème
 
