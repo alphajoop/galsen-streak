@@ -13,4 +13,4 @@ export const THEMES: Theme[] = [
   { value: "forest", label: "Forest", emoji: "🌲", colors: ["#0f1419", "#7ee787", "#2ea043"] },
 ];
 
-export const API_BASE = "https://galsen-streak.vercel.app";
+export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
