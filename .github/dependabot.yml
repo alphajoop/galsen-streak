@@ -1,0 +1,158 @@
+version: 2
+updates:
+  # API (Bun + TypeScript)
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Africa/Dakar"
+    open-pull-requests-limit: 5
+    assignees:
+      - "alphajoop"
+    labels:
+      - "dependencies"
+      - "api"
+      - "bun"
+    commit-message:
+      prefix: "chore(api)"
+      include: "scope"
+    groups:
+      # Group TypeScript related updates
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "bun"
+          - "@types/bun"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group linting/formatting
+      quality:
+        patterns:
+          - "@biomejs/biome"
+          - "biome"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group production dependencies
+      production:
+        patterns:
+          - "hono"
+          - "date-fns"
+        update-types:
+          - "patch"
+
+  # Web (React + Vite + Tailwind)
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Africa/Dakar"
+    open-pull-requests-limit: 5
+    assignees:
+      - "alphajoop"
+    labels:
+      - "dependencies"
+      - "web"
+      - "react"
+    commit-message:
+      prefix: "chore(web)"
+      include: "scope"
+    groups:
+      # Group React ecosystem
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+          - "babel-plugin-react-compiler"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Vite ecosystem
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group Tailwind CSS
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group ESLint ecosystem
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group UI libraries
+      ui:
+        patterns:
+          - "lucide-react"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Group TypeScript
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Africa/Dakar"
+    open-pull-requests-limit: 3
+    assignees:
+      - "alphajoop"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
