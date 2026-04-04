@@ -1,5 +1,6 @@
-import { BarChart3, ExternalLink, Flame, Github, Palette } from "lucide-react";
+import { BarChart3, ExternalLink, Flame, Palette } from "lucide-react";
 import { useMemo, useState } from "react";
+import { GithubIcon } from "./components/BrandIcon";
 import { CopyButton } from "./components/CopyButton";
 import { EmptyState } from "./components/EmptyState";
 import { Footer } from "./components/Footer";
@@ -40,12 +41,12 @@ export default function App() {
             htmlFor="username"
             className="flex items-center gap-2 text-sm font-medium text-zinc-400"
           >
-            <Github className="w-4 h-4" />
+            <GithubIcon className="w-4 h-4" />
             GitHub Username
           </label>
           <Input
             id="username"
-            icon={Github}
+            icon={GithubIcon}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="torvalds"
