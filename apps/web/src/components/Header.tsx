@@ -1,4 +1,5 @@
-import { Flame, Github } from "lucide-react";
+import { Flame } from "lucide-react";
+import { GithubIcon } from "./BrandIcon";
 
 export function Header() {
   return (
@@ -20,7 +21,7 @@ export function Header() {
           rel="noopener noreferrer"
           className="p-2 hover:bg-zinc-900 rounded-lg transition-colors"
         >
-          <Github className="w-5 h-5" />
+          <GithubIcon className="w-5 h-5" />
         </a>
       </div>
     </header>
