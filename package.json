@@ -14,9 +14,9 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.15",
-    "turbo": "^2.8.17",
-    "typescript": "5.9.3"
+    "@biomejs/biome": "2.5.0",
+    "turbo": "^2.9.18",
+    "typescript": "6.0.3"
   },
   "engines": {
     "node": ">=18"
@@ -27,6 +27,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "simple-icons": "^16.14.0"
+    "simple-icons": "^16.24.0"
   }
 }
