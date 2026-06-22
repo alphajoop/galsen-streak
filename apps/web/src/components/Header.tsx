@@ -1,17 +1,18 @@
-import { Flame } from "lucide-react";
 import { GithubIcon } from "./BrandIcon";
 
 export function Header() {
   return (
-    <header className="border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-sm sticky top-0 z-10">
-      <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-10 border-b border-border bg-surface/80 backdrop-blur-md">
+      <div className="senegal-stripe h-0.5" />
+
+      <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-            <Flame className="w-6 h-6 text-white" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-overlay text-lg ring-1 ring-border">
+            🇸🇳
           </div>
           <div>
-            <h1 className="text-lg font-bold">Galsen Streak</h1>
-            <p className="text-xs text-zinc-500">GitHub Streak Badge Generator</p>
+            <h1 className="text-[15px] font-semibold tracking-tight">Galsen Streak</h1>
+            <p className="text-xs text-muted">GitHub streak badge</p>
           </div>
         </div>
 
@@ -19,9 +20,10 @@ export function Header() {
           href="https://github.com/alphajoop/galsen-streak"
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 hover:bg-zinc-900 rounded-lg transition-colors"
+          className="rounded-lg p-2 text-subtle transition-colors duration-200 hover:bg-surface-overlay hover:text-white active:scale-[0.97]"
+          aria-label="View source on GitHub"
         >
-          <GithubIcon className="w-5 h-5" />
+          <GithubIcon className="h-[18px] w-[18px]" />
         </a>
       </div>
     </header>

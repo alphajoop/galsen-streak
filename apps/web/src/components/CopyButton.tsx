@@ -9,8 +9,8 @@ interface Props {
 export function CopyButton({ text, label }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -19,16 +19,16 @@ export function CopyButton({ text, label }: Props) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all text-sm font-medium text-white"
+      className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-surface-raised px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:border-border-hover active:scale-[0.98]"
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4 text-green-500" />
-          Copied!
+          <Check className="h-3.5 w-3.5 text-senegal-green" />
+          <span className="text-senegal-green">Copied</span>
         </>
       ) : (
         <>
-          <Copy className="w-4 h-4" />
+          <Copy className="h-3.5 w-3.5 text-muted" />
           {label}
         </>
       )}

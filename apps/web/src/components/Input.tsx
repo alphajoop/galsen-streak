@@ -6,20 +6,26 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export function Input({ icon: Icon, error, ...props }: Props) {
+export function Input({ icon: Icon, error, className = "", ...props }: Props) {
   return (
-    <div className="relative">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
-        <Icon className="w-5 h-5" />
+    <div className="space-y-1.5">
+      <div className="relative">
+        <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
+          <Icon className="h-4 w-4" />
+        </div>
+        <input
+          {...props}
+          className={`w-full rounded-xl border bg-surface-raised py-3 pl-10 pr-4 text-[15px] text-white outline-none transition-all duration-200 placeholder:text-muted/60
+            focus:border-senegal-green/50 focus:ring-2 focus:ring-senegal-green/20
+            ${error ? "border-senegal-red/50" : "border-border hover:border-border-hover"}
+            ${className}`}
+        />
       </div>
-      <input
-        {...props}
-        className={`w-full pl-10 pr-4 py-3 bg-zinc-900/50 border rounded-xl outline-none transition-all
-          placeholder:text-zinc-600 text-white
-          focus:bg-zinc-900 focus:border-zinc-600
-          ${error ? "border-red-500/50 focus:border-red-500" : "border-zinc-800 hover:border-zinc-700"}`}
-      />
-      {error && <p className="text-xs text-red-400 mt-1.5 ml-1">{error}</p>}
+      {error && (
+        <p className="pl-1 text-xs text-senegal-red" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
