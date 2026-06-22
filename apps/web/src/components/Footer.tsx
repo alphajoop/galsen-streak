@@ -1,8 +1,8 @@
 export function Footer() {
   return (
-    <footer className="border-t border-zinc-900 mt-20">
-      <div className="max-w-4xl mx-auto px-6 py-8 text-center text-sm text-zinc-600">
-        Made with <span className="text-red-500">♥</span> in Senegal 🇸🇳
+    <footer className="mt-24 border-t border-border">
+      <div className="mx-auto max-w-2xl px-5 py-8 text-center text-xs text-muted">
+        Made in Senegal
       </div>
     </footer>
   );

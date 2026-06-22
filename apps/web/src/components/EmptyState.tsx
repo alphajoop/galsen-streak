@@ -1,14 +1,12 @@
-import { GithubIcon } from "./BrandIcon";
-
 export function EmptyState() {
   return (
-    <div className="text-center py-16 space-y-3">
-      <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto">
-        <GithubIcon className="w-8 h-8 text-zinc-600" />
+    <div className="animate-in flex flex-col items-center py-20 text-center">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-raised text-2xl ring-1 ring-border">
+        🔥
       </div>
-      <h3 className="text-lg font-semibold text-zinc-300">Get Started</h3>
-      <p className="text-sm text-zinc-500 max-w-md mx-auto">
-        Enter your GitHub username above to generate your personalized streak badge
+      <h2 className="text-sm font-medium text-subtle">Enter a username to preview</h2>
+      <p className="mt-1.5 max-w-xs text-xs text-muted">
+        Your streak badge will appear here with the Senegal theme
       </p>
     </div>
   );

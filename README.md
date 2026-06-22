@@ -1,24 +1,16 @@
-# 🔥 Galsen Streak
+# Galsen Streak
 
-GitHub Streak à la sénégalaise avec un design moderne
+GitHub streak badge à la sénégalaise 🇸🇳
 
-## 🚀 Usage
-
-### Basic
+## Usage
 
 ```md
 ![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME)
 ```
 
-**Exemple réel :**
+**Exemple :**
 
 [![Galsen Streak](https://galsen-streak.vercel.app/streak/torvalds)](https://galsen-streak.vercel.app/streak/torvalds)
-
-### Avec thème
-
-```md
-![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?theme=ocean)
-```
 
 ### Sans graphique
 
@@ -26,53 +18,35 @@ GitHub Streak à la sénégalaise avec un design moderne
 ![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?hide_graph=true)
 ```
 
-## 🎨 Thèmes disponibles
+## Fonctionnalités
 
-- `senegal` (défaut) - Drapeau sénégalais 🇸🇳
-- `ocean` - Bleu océan profond 🌊
-- `github` - Style GitHub officiel
-- `sunset` - Coucher de soleil 🌅
-- `forest` - Forêt verte 🌲
+- Streak actuel et record
+- Total des contributions
+- Graphique des 30 derniers jours (optionnel)
+- Thème Sénégal (vert, jaune, rouge)
+- Animations fluides
+- Cache 1h
 
-## 📊 Fonctionnalités
-
-✅ Streak actuel et record  
-✅ Total des contributions  
-✅ Graphique des 30 derniers jours  
-✅ 5 thèmes modernes  
-✅ Animations fluides  
-✅ Cache 1h  
-✅ Design responsive
-
-## 🛠️ Installation
+## Installation
 
 ```bash
-# Cloner
 git clone https://github.com/alphajoop/galsen-streak.git
 cd galsen-streak
-
-# Installer
 bun install
 
-# Config
-echo "GITHUB_TOKEN=your_token_here" > .env
+echo "GITHUB_TOKEN=your_token_here" > apps/api/.env
 
-# Dev
 bun run dev
-
-# Build
-bun run build
-bun start
 ```
 
-## 🧩 Tech Stack
+## Tech Stack
 
-- Bun.js
+- Bun
 - Hono
-- TypeScript strict
-- SVG dynamique avec animations
+- React + Vite + Tailwind CSS v4
+- TypeScript
 - GitHub GraphQL API
 
-## 📄 License
+## License
 
 MIT

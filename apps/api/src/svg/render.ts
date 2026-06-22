@@ -1,96 +1,77 @@
 import { format } from "date-fns";
 import type { StreakResult } from "../streak/types";
-import { THEMES, type Theme } from "./themes";
-
-function getTheme(themeName: string): Theme {
-  const themes = THEMES;
-  const theme = themes[themeName];
-  return theme ?? (themes.senegal as Theme);
-}
+import { type Palette, SENEGAL } from "./palette";
 
 function formatDate(dateString: string): string {
   return format(new Date(dateString), "MMMM d, yyyy");
 }
 
-export function renderSVG(
-  streak: StreakResult,
-  themeName: string = "senegal",
-  showGraph: boolean = true,
-): string {
-  const theme = getTheme(themeName);
+function statusColor(status: StreakResult["streakStatus"], palette: Palette): string {
+  switch (status) {
+    case "active":
+      return palette.active;
+    case "grace-day":
+      return palette.warning;
+    case "broken":
+      return palette.error;
+    default:
+      return palette.error;
+  }
+}
+
+export function renderSVG(streak: StreakResult, showGraph = true): string {
+  const palette = SENEGAL;
   const { current, longest, totalLifetime, accountCreatedAt, graph, streakStatus } = streak;
 
   const maxValue = Math.max(...graph, 1);
   const normalizedGraph = graph.map((val) => (val / maxValue) * 40);
   const formattedDate = formatDate(accountCreatedAt);
 
-  const getStatusColor = () => {
-    switch (streakStatus) {
-      case "active":
-        return "#22c55e";
-      case "grace-day":
-        return "#f59e0b";
-      case "broken":
-        return "#ef4444";
-      default:
-        return "#ef4444";
-    }
-  };
-
   return `
 <svg width="495" height="${showGraph ? "220" : "155"}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:${theme.bg};stop-opacity:1" />
-      <stop offset="100%" style="stop-color:${theme.bgGradient || theme.bg};stop-opacity:1" />
-    </linearGradient>
-    
-    <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:${theme.border};stop-opacity:0.5" />
-      <stop offset="50%" style="stop-color:${theme.border};stop-opacity:1" />
-      <stop offset="100%" style="stop-color:${theme.border};stop-opacity:0.5" />
+      <stop offset="0%" style="stop-color:${palette.bg};stop-opacity:1" />
+      <stop offset="100%" style="stop-color:${palette.bgGradient};stop-opacity:1" />
     </linearGradient>
 
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
-      
-      .title { 
-        font: 600 18px 'Inter', 'Segoe UI', system-ui, sans-serif; 
-        fill: ${theme.title};
+
+      .title {
+        font: 600 18px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        fill: ${palette.title};
         letter-spacing: -0.5px;
       }
-      
-      .stat-label { 
-        font: 400 11px 'Inter', 'Segoe UI', system-ui, sans-serif; 
-        fill: ${theme.subtext};
+
+      .stat-label {
+        font: 600 11px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        fill: ${palette.subtext};
         text-transform: uppercase;
         letter-spacing: 1px;
-        font-weight: 600;
       }
-      
-      .stat-value { 
-        font: 700 28px 'Inter', 'Segoe UI', system-ui, sans-serif; 
-        fill: ${theme.text};
+
+      .stat-value {
+        font: 700 28px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        fill: ${palette.text};
       }
-      
+
       .stat-unit {
         font: 400 14px 'Inter', 'Segoe UI', system-ui, sans-serif;
-        fill: ${theme.subtext};
+        fill: ${palette.subtext};
       }
-      
-      .fire-emoji {
-        font-size: 22px;
-      }
-      
+
+      .fire-emoji { font-size: 22px; }
+
       .contributions-text {
         font: 600 12px 'Inter', 'Segoe UI', system-ui, sans-serif;
-        fill: ${theme.text};
+        fill: ${palette.text};
         letter-spacing: 0.3px;
       }
 
       .contributions-since {
         font: 400 9px 'Inter', 'Segoe UI', system-ui, sans-serif;
-        fill: ${theme.subtext};
+        fill: ${palette.subtext};
         letter-spacing: 0.2px;
       }
 
@@ -109,11 +90,6 @@ export function renderSVG(
         to { opacity: 1; transform: translateX(0); }
       }
 
-      @keyframes borderShine {
-        0% { stroke-dashoffset: 1000; }
-        100% { stroke-dashoffset: 0; }
-      }
-
       .fire-emoji {
         animation: pulse 2s ease-in-out infinite;
         transform-origin: center;
@@ -127,12 +103,6 @@ export function renderSVG(
       .stat-card:nth-child(1) { animation-delay: 0.1s; }
       .stat-card:nth-child(2) { animation-delay: 0.2s; }
       .header-group { animation: slideInLeft 0.5s ease-out; }
-      
-      .border-animated {
-        stroke-dasharray: 1000;
-        stroke-dashoffset: 1000;
-        animation: borderShine 2s ease-out forwards;
-      }
 
       .graph-bar {
         animation: fadeInUp 0.8s ease-out forwards;
@@ -143,16 +113,14 @@ export function renderSVG(
   </defs>
 
   <rect width="100%" height="100%" rx="12" fill="url(#bgGradient)" />
-  <rect x="1" y="1" width="493" height="${showGraph ? "218" : "153"}" 
-        rx="11" fill="none" stroke="url(#borderGradient)" 
-        stroke-width="1.5" class="border-animated" opacity="0.4"/>
+  <rect x="0.75" y="0.75" width="493.5" height="${showGraph ? "218.5" : "153.5"}"
+        rx="11.25" fill="none" stroke="${palette.border}"
+        stroke-width="1.5" stroke-opacity="0.45"/>
 
-  <!-- Header -->
   <g class="header-group">
     <text x="20" y="35" class="fire-emoji">🔥</text>
     <text x="50" y="38" class="title">Galsen Streak</text>
-    
-    <!-- Total Lifetime Contributions -->
+
     <g transform="translate(465, 0)">
       <text x="0" y="30" class="contributions-text" text-anchor="end">
         ${totalLifetime.toLocaleString()} contributions
@@ -163,52 +131,46 @@ export function renderSVG(
     </g>
   </g>
 
-  <!-- Stats Grid -->
   <g transform="translate(20, 65)">
-    <!-- Current Streak Card -->
     <g class="stat-card">
-      <rect x="0" y="0" width="210" height="70" rx="10" 
-            fill="${theme.border}" opacity="0.08"/>
-      <rect x="0" y="0" width="210" height="70" rx="10" 
-            fill="none" stroke="${theme.border}" stroke-width="1" opacity="0.2"/>
+      <rect x="0" y="0" width="210" height="70" rx="10"
+            fill="${palette.border}" opacity="0.08"/>
+      <rect x="0" y="0" width="210" height="70" rx="10"
+            fill="none" stroke="${palette.border}" stroke-width="1" opacity="0.2"/>
       <text x="15" y="22" class="stat-label">🔥 Current Streak</text>
       <text x="15" y="55" class="stat-value">${current}</text>
       <text x="${current > 99 ? 85 : current > 9 ? 70 : 60}" y="55" class="stat-unit">days</text>
-      
-      <!-- Status indicator -->
-      <circle cx="200" cy="50" r="3" fill="${getStatusColor()}" opacity="0.8"/>
+      <circle cx="200" cy="50" r="3" fill="${statusColor(streakStatus, palette)}" opacity="0.8"/>
     </g>
 
-    <!-- Longest Streak Card -->
     <g class="stat-card">
-      <rect x="225" y="0" width="210" height="70" rx="10" 
-            fill="${theme.accent}" opacity="0.08"/>
-      <rect x="225" y="0" width="210" height="70" rx="10" 
-            fill="none" stroke="${theme.accent}" stroke-width="1" opacity="0.2"/>
+      <rect x="225" y="0" width="210" height="70" rx="10"
+            fill="${palette.accent}" opacity="0.08"/>
+      <rect x="225" y="0" width="210" height="70" rx="10"
+            fill="none" stroke="${palette.accent}" stroke-width="1" opacity="0.2"/>
       <text x="240" y="22" class="stat-label">🏆 Longest</text>
       <text x="240" y="55" class="stat-value">${longest}</text>
       <text x="${longest > 99 ? 310 : longest > 9 ? 295 : 285}" y="55" class="stat-unit">days</text>
     </g>
   </g>
 
-  ${showGraph ? renderGraph(normalizedGraph, theme) : ""}
+  ${showGraph ? renderGraph(normalizedGraph, palette) : ""}
 </svg>
 `.trim();
 }
 
-function renderGraph(graph: number[], theme: Theme): string {
+function renderGraph(graph: number[], palette: Palette): string {
   const barWidth = 12;
   const gap = 3;
   const startX = 20;
   const startY = 180;
-
   const max = Math.max(...graph);
 
   return `
-  <line x1="20" y1="148" x2="475" y2="148" 
-        stroke="${theme.border}" stroke-width="1" opacity="0.15"/>
-  <text x="20" y="164" class="stat-label">Activity - Last 30 days</text>
-  
+  <line x1="20" y1="148" x2="475" y2="148"
+        stroke="${palette.border}" stroke-width="1" opacity="0.15"/>
+  <text x="20" y="164" class="stat-label">Activity — Last 30 days</text>
+
   <g transform="translate(${startX}, ${startY + 25})">
     ${graph
       .map((height, i) => {
@@ -217,22 +179,22 @@ function renderGraph(graph: number[], theme: Theme): string {
 
         let color: string;
         if (height > max * 0.7) {
-          color = theme.graph[2] || theme.accent;
+          color = palette.graph[2];
         } else if (height > max * 0.3) {
-          color = theme.graph[1] || theme.border;
+          color = palette.graph[1];
         } else if (height > 0) {
-          color = theme.graph[0] || theme.subtext;
+          color = palette.graph[0];
         } else {
-          color = theme.subtext;
+          color = palette.subtext;
         }
 
         const opacity = height > 0 ? 0.9 : 0.2;
         const delay = i * 0.02;
 
         return `
-        <rect x="${x}" y="${-actualHeight}" 
-              width="${barWidth}" height="${actualHeight}" 
-              rx="3" fill="${color}" opacity="${opacity}" 
+        <rect x="${x}" y="${-actualHeight}"
+              width="${barWidth}" height="${actualHeight}"
+              rx="3" fill="${color}" opacity="${opacity}"
               class="graph-bar"
               style="animation-delay: ${delay}s;">
         </rect>

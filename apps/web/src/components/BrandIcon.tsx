@@ -1,11 +1,9 @@
-"use client";
-
 import { forwardRef } from "react";
 import { siGithub } from "simple-icons/icons";
 
 const brandIcons = {
   github: siGithub,
-};
+} as const;
 
 interface BrandIconProps {
   brand: keyof typeof brandIcons;
@@ -19,14 +17,7 @@ interface BrandIconProps {
 export const BrandIcon = forwardRef<SVGSVGElement, BrandIconProps>(
   ({ brand, size = 24, className = "", color, useBrandColor = false, title, ...props }, ref) => {
     const icon = brandIcons[brand];
-
-    if (!icon) {
-      console.warn(`BrandIcon: "${brand}" not found in brandIcons`);
-      return null;
-    }
-
     const fillColor = color || (useBrandColor ? `#${icon.hex}` : "currentColor");
-
     const accessibleTitle = title || `${brand} icon`;
 
     return (
@@ -51,7 +42,6 @@ export const BrandIcon = forwardRef<SVGSVGElement, BrandIconProps>(
 
 BrandIcon.displayName = "BrandIcon";
 
-// Convenience exports
 export const GithubIcon = forwardRef<SVGSVGElement, Omit<BrandIconProps, "brand">>((props, ref) => (
   <BrandIcon brand="github" ref={ref} {...props} />
 ));
