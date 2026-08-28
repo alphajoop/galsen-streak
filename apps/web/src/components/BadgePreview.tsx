@@ -7,6 +7,15 @@ interface Props {
   markdown: string;
 }
 
+function CopyRow({ label, value, ariaLabel }: { label: string; value: string; ariaLabel: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <CopyButton value={value} aria-label={ariaLabel} />
+      <span className="text-sm text-subtle">{label}</span>
+    </div>
+  );
+}
+
 export function BadgePreview({ badgeUrl, markdown }: Props) {
   const [loading, setLoading] = useState(true);
   const previewSrc = useMemo(
@@ -17,7 +26,7 @@ export function BadgePreview({ badgeUrl, markdown }: Props) {
   return (
     <div className="animate-in animate-in-delay-2 space-y-4">
       <div className="relative overflow-hidden rounded-xl border border-border bg-surface-raised p-5 glow-green">
-        <div className="relative flex min-h-[180px] items-center justify-center">
+        <div className="relative flex min-h-45 items-center justify-center">
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div
@@ -37,14 +46,14 @@ export function BadgePreview({ badgeUrl, markdown }: Props) {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <CopyButton text={badgeUrl} label="Copy URL" />
-        <CopyButton text={markdown} label="Copy Markdown" />
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <CopyRow label="Copy URL" value={badgeUrl} ariaLabel="Copy badge URL" />
+        <CopyRow label="Copy Markdown" value={markdown} ariaLabel="Copy markdown snippet" />
         <a
           href={badgeUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-xl bg-senegal-green px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+          className="ml-auto flex items-center gap-2 rounded-xl bg-senegal-green px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Open
@@ -53,9 +62,12 @@ export function BadgePreview({ badgeUrl, markdown }: Props) {
 
       <div className="space-y-2">
         <p className="text-xs text-muted">Markdown</p>
-        <pre className="overflow-x-auto rounded-xl border border-border bg-surface p-4 text-xs leading-relaxed text-subtle">
-          <code>{markdown}</code>
-        </pre>
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-surface p-4">
+          <pre className="min-w-0 flex-1 overflow-x-auto text-xs leading-relaxed text-subtle">
+            <code>{markdown}</code>
+          </pre>
+          <CopyButton value={markdown} aria-label="Copy markdown snippet" />
+        </div>
       </div>
     </div>
   );
