@@ -14,17 +14,11 @@ export type StreakResult = {
   streakStatus: "active" | "grace-day" | "broken";
 };
 
-export type UserInfo = {
-  createdAt: string;
-  contributionYears: number[];
-};
-
 export type GitHubGraphQLResponse = {
   data?: {
     user?: {
       createdAt?: string;
       contributionsCollection: {
-        contributionYears?: number[];
         contributionCalendar: {
           totalContributions: number;
           weeks: {

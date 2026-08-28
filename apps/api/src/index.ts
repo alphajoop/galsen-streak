@@ -30,7 +30,7 @@ app.get("/streak/:username", async (c) => {
         </text>
       </svg>`,
       404,
-      { "Content-Type": "image/svg+xml" },
+      { "Content-Type": "image/svg+xml; charset=utf-8" },
     );
   }
 });

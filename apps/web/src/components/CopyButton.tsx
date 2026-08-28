@@ -58,14 +58,13 @@ export function CopyButton({
 
   function handleCopy() {
     if (copied || error) return;
-    setCopied(true);
     void copyToClipboard(value).then((ok) => {
       if (!ok) {
-        setCopied(false);
         setError(true);
         onCopyError?.();
         return;
       }
+      setCopied(true);
       onCopied?.();
     });
   }
