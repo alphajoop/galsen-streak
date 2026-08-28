@@ -12,7 +12,7 @@ app.get("/streak/:username", async (c) => {
 
   try {
     const profile = await getUserProfile(username);
-    const totalLifetime = await getLifetimeContributions(username, profile.createdAt);
+    const totalLifetime = await getLifetimeContributions(username, profile.contributionYears);
 
     const streak = calculateStreak(profile.days, totalLifetime, profile.createdAt);
     const svg = renderSVG(streak, !hideGraph);

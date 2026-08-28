@@ -19,6 +19,7 @@ export type GitHubGraphQLResponse = {
     user?: {
       createdAt?: string;
       contributionsCollection: {
+        contributionYears?: number[];
         contributionCalendar: {
           totalContributions: number;
           weeks: {

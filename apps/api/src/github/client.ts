@@ -4,6 +4,7 @@ const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
 
 export type UserProfile = {
   createdAt: string;
+  contributionYears: number[];
   days: CommitDay[];
 };
 
@@ -32,6 +33,7 @@ export async function getUserProfile(username: string): Promise<UserProfile> {
       user(login: $login) {
         createdAt
         contributionsCollection {
+          contributionYears
           contributionCalendar {
             weeks {
               contributionDays {
@@ -65,18 +67,16 @@ export async function getUserProfile(username: string): Promise<UserProfile> {
 
   return {
     createdAt: data.data.user.createdAt,
+    contributionYears: data.data.user.contributionsCollection.contributionYears ?? [],
     days,
   };
 }
 
-export async function getLifetimeContributions(
-  username: string,
-  createdAt: string,
-): Promise<number> {
+async function getContributionsForYear(username: string, year: number): Promise<number> {
   const query = `
-    query($login: String!, $from: DateTime!) {
+    query($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
-        contributionsCollection(from: $from) {
+        contributionsCollection(from: $from, to: $to) {
           contributionCalendar {
             totalContributions
           }
@@ -87,8 +87,22 @@ export async function getLifetimeContributions(
 
   const data = await githubGraphql<GitHubGraphQLResponse>(query, {
     login: username,
-    from: createdAt,
+    from: `${year}-01-01T00:00:00Z`,
+    to: `${year}-12-31T23:59:59Z`,
   });
 
   return data.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ?? 0;
+}
+
+export async function getLifetimeContributions(
+  username: string,
+  contributionYears: number[],
+): Promise<number> {
+  if (contributionYears.length === 0) return 0;
+
+  const totals = await Promise.all(
+    contributionYears.map((year) => getContributionsForYear(username, year)),
+  );
+
+  return totals.reduce((sum, count) => sum + count, 0);
 }
