@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getStreakData, getTotalContributions, getUserInfo } from "./github/client";
+import { getLifetimeContributions, getUserProfile } from "./github/client";
 import { calculateStreak } from "./streak/calculator";
 import { SENEGAL } from "./svg/palette";
 import { renderSVG } from "./svg/render";
@@ -11,18 +11,15 @@ app.get("/streak/:username", async (c) => {
   const hideGraph = c.req.query("hide_graph") === "true";
 
   try {
-    const [days, userInfo, totalLifetime] = await Promise.all([
-      getStreakData(username),
-      getUserInfo(username),
-      getTotalContributions(username),
-    ]);
+    const profile = await getUserProfile(username);
+    const totalLifetime = await getLifetimeContributions(username, profile.createdAt);
 
-    const streak = calculateStreak(days, totalLifetime, userInfo.createdAt);
+    const streak = calculateStreak(profile.days, totalLifetime, profile.createdAt);
     const svg = renderSVG(streak, !hideGraph);
 
     return c.text(svg, 200, {
-      "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, max-age=3600",
+      "Content-Type": "image/svg+xml; charset=utf-8",
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
     });
   } catch (_error) {
     return c.text(
@@ -46,4 +43,9 @@ app.get("/", (c) => {
   });
 });
 
-export default app;
+const port = Number(process.env.PORT) || 3000;
+
+export default {
+  port,
+  fetch: app.fetch,
+};

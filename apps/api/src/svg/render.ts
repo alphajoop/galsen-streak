@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import type { StreakResult } from "../streak/types";
 import { type Palette, SENEGAL } from "./palette";
 
+const FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+
 function formatDate(dateString: string): string {
   return format(new Date(dateString), "MMMM d, yyyy");
 }
@@ -9,9 +11,8 @@ function formatDate(dateString: string): string {
 function statusColor(status: StreakResult["streakStatus"], palette: Palette): string {
   switch (status) {
     case "active":
-      return palette.active;
     case "grace-day":
-      return palette.warning;
+      return palette.active;
     case "broken":
       return palette.error;
     default:
@@ -30,47 +31,40 @@ export function renderSVG(streak: StreakResult, showGraph = true): string {
   return `
 <svg width="495" height="${showGraph ? "220" : "155"}" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:${palette.bg};stop-opacity:1" />
-      <stop offset="100%" style="stop-color:${palette.bgGradient};stop-opacity:1" />
-    </linearGradient>
-
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap');
-
       .title {
-        font: 600 18px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 600 18px ${FONT};
         fill: ${palette.title};
         letter-spacing: -0.5px;
       }
 
       .stat-label {
-        font: 600 11px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 600 11px ${FONT};
         fill: ${palette.subtext};
         text-transform: uppercase;
         letter-spacing: 1px;
       }
 
       .stat-value {
-        font: 700 28px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 700 28px ${FONT};
         fill: ${palette.text};
       }
 
       .stat-unit {
-        font: 400 14px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 400 14px ${FONT};
         fill: ${palette.subtext};
       }
 
       .fire-emoji { font-size: 22px; }
 
       .contributions-text {
-        font: 600 12px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 600 12px ${FONT};
         fill: ${palette.text};
         letter-spacing: 0.3px;
       }
 
       .contributions-since {
-        font: 400 9px 'Inter', 'Segoe UI', system-ui, sans-serif;
+        font: 400 9px ${FONT};
         fill: ${palette.subtext};
         letter-spacing: 0.2px;
       }
@@ -80,19 +74,9 @@ export function renderSVG(streak: StreakResult, showGraph = true): string {
         to { opacity: 1; transform: translateY(0); }
       }
 
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.85; transform: scale(1.05); }
-      }
-
       @keyframes slideInLeft {
         from { opacity: 0; transform: translateX(-20px); }
         to { opacity: 1; transform: translateX(0); }
-      }
-
-      .fire-emoji {
-        animation: pulse 2s ease-in-out infinite;
-        transform-origin: center;
       }
 
       .stat-card {
@@ -112,7 +96,7 @@ export function renderSVG(streak: StreakResult, showGraph = true): string {
     </style>
   </defs>
 
-  <rect width="100%" height="100%" rx="12" fill="url(#bgGradient)" />
+  <rect width="100%" height="100%" rx="12" fill="${palette.bg}" />
   <rect x="0.75" y="0.75" width="493.5" height="${showGraph ? "218.5" : "153.5"}"
         rx="11.25" fill="none" stroke="${palette.border}"
         stroke-width="1.5" stroke-opacity="0.45"/>

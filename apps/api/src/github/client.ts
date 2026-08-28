@@ -1,16 +1,38 @@
-import type { CommitDay, GitHubGraphQLResponse, UserInfo } from "../streak/types";
+import type { CommitDay, GitHubGraphQLResponse } from "../streak/types";
 
-export async function getStreakData(username: string): Promise<CommitDay[]> {
-  const TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_GRAPHQL_URL = "https://api.github.com/graphql";
 
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
+export type UserProfile = {
+  createdAt: string;
+  days: CommitDay[];
+};
 
+function getToken(): string {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error("GITHUB_TOKEN not defined");
+  return token;
+}
+
+async function githubGraphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+  const res = await fetch(GITHUB_GRAPHQL_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  return res.json() as Promise<T>;
+}
+
+export async function getUserProfile(username: string): Promise<UserProfile> {
   const query = `
     query($login: String!) {
       user(login: $login) {
+        createdAt
         contributionsCollection {
           contributionCalendar {
-            totalContributions
             weeks {
               contributionDays {
                 date
@@ -23,18 +45,11 @@ export async function getStreakData(username: string): Promise<CommitDay[]> {
     }
   `;
 
-  const res = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${TOKEN}`,
-    },
-    body: JSON.stringify({ query, variables: { login: username } }),
-  });
+  const data = await githubGraphql<GitHubGraphQLResponse>(query, { login: username });
 
-  const data = (await res.json()) as GitHubGraphQLResponse;
-
-  if (!data.data?.user) return [];
+  if (!data.data?.user?.createdAt) {
+    throw new Error("User not found");
+  }
 
   const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
   const days: CommitDay[] = [];
@@ -48,105 +63,32 @@ export async function getStreakData(username: string): Promise<CommitDay[]> {
     }
   }
 
-  return days;
+  return {
+    createdAt: data.data.user.createdAt,
+    days,
+  };
 }
 
-export async function getUserInfo(username: string): Promise<UserInfo> {
-  const TOKEN = process.env.GITHUB_TOKEN;
-
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
-
-  // GraphQL query for user info
+export async function getLifetimeContributions(
+  username: string,
+  createdAt: string,
+): Promise<number> {
   const query = `
-    query($login: String!) {
+    query($login: String!, $from: DateTime!) {
       user(login: $login) {
-        createdAt
-        contributionsCollection {
-          contributionYears
+        contributionsCollection(from: $from) {
+          contributionCalendar {
+            totalContributions
+          }
         }
       }
     }
   `;
 
-  const res = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${TOKEN}`,
-    },
-    body: JSON.stringify({ query, variables: { login: username } }),
+  const data = await githubGraphql<GitHubGraphQLResponse>(query, {
+    login: username,
+    from: createdAt,
   });
 
-  const data = (await res.json()) as GitHubGraphQLResponse;
-
-  if (!data.data?.user) {
-    throw new Error("User not found");
-  }
-
-  const createdAt = data.data.user.createdAt;
-  const years = data.data.user.contributionsCollection.contributionYears || [];
-
-  if (!createdAt) {
-    throw new Error("User creation date not found");
-  }
-
-  return {
-    createdAt,
-    contributionYears: years,
-  };
-}
-
-export async function getTotalContributions(username: string): Promise<number> {
-  const TOKEN = process.env.GITHUB_TOKEN;
-
-  if (!TOKEN) throw new Error("⚠️ GITHUB_TOKEN not defined in .env");
-
-  const userInfo = await getUserInfo(username);
-  const years = userInfo.contributionYears;
-
-  if (years.length === 0) return 0;
-
-  // Get contributions for each year
-  let totalContributions = 0;
-
-  for (const year of years) {
-    const fromDate = `${year}-01-01T00:00:00Z`;
-    const toDate = `${year}-12-31T23:59:59Z`;
-
-    const query = `
-      query($login: String!, $from: DateTime!, $to: DateTime!) {
-        user(login: $login) {
-          contributionsCollection(from: $from, to: $to) {
-            contributionCalendar {
-              totalContributions
-            }
-          }
-        }
-      }
-    `;
-
-    const res = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${TOKEN}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          login: username,
-          from: fromDate,
-          to: toDate,
-        },
-      }),
-    });
-
-    const data = (await res.json()) as GitHubGraphQLResponse;
-    const yearContributions =
-      data.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions || 0;
-
-    totalContributions += yearContributions;
-  }
-
-  return totalContributions;
+  return data.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions ?? 0;
 }

@@ -18,6 +18,14 @@ GitHub streak badge à la sénégalaise 🇸🇳
 ![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?hide_graph=true)
 ```
 
+### Badge absent sur GitHub ?
+
+GitHub met en cache les images via Camo. Si le badge n’apparaît pas au premier ajout, ajoute un paramètre :
+
+```md
+![Galsen Streak](https://galsen-streak.vercel.app/streak/USERNAME?v=1)
+```
+
 ## Fonctionnalités
 
 - Streak actuel et record
